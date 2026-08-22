@@ -1,3 +1,25 @@
+@font-face {
+  font-family: "Instrument Serif";
+  font-style: normal;
+  font-weight: 400;
+  font-display: block;
+  src: url("/landing-pages/meng-to-sketchbook/instrument-serif.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Instrument Serif";
+  font-style: italic;
+  font-weight: 400;
+  font-display: block;
+  src: url("/landing-pages/meng-to-sketchbook/instrument-serif-italic.woff2") format("woff2");
+}
+@font-face {
+  font-family: "Newsreader";
+  font-style: normal;
+  font-weight: 200 600;
+  font-display: swap;
+  src: url("/landing-pages/meng-to-sketchbook/newsreader.woff2") format("woff2");
+}
+
 :root {
   --paper: #ece7dc;
   --ink: #2b2721;
@@ -53,19 +75,20 @@ button {
   inset: 0;
   z-index: -2;
   pointer-events: none;
-  background:
-    radial-gradient(120% 80% at 12% 0%, rgba(196, 176, 140, 0.45), transparent 54%),
-    radial-gradient(90% 70% at 88% 8%, rgba(168, 186, 154, 0.28), transparent 50%),
-    linear-gradient(180deg, #e8e0d0 0%, var(--paper) 72%);
+  background: url("/landing-pages/meng-to-sketchbook/bg-wash.jpg") center top / cover no-repeat;
+  opacity: 0.85;
 }
 
 .wash:after {
   content: "";
   position: absolute;
   inset: 0;
-  opacity: 0.28;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='.55'/%3E%3C/svg%3E");
-  mix-blend-mode: multiply;
+  background: linear-gradient(
+    180deg,
+    rgba(236, 231, 220, 0.25) 0%,
+    rgba(236, 231, 220, 0.72) 58%,
+    var(--paper) 88%
+  );
 }
 
 .top {
@@ -428,8 +451,8 @@ button {
 
 .gutter-shade {
   position: absolute;
-  top: var(--pg, 18%);
-  bottom: var(--pg, 18%);
+  top: var(--pg, 21.8%);
+  bottom: var(--pg, 21.8%);
   width: 46%;
   pointer-events: none;
   opacity: calc(var(--shade, 0) * 0.62);
@@ -548,8 +571,8 @@ button {
   position: absolute;
   left: 0;
   right: 0;
-  top: var(--pg, 18%);
-  bottom: var(--pg, 18%);
+  top: var(--pg, 21.8%);
+  bottom: var(--pg, 21.8%);
   pointer-events: none;
 }
 
@@ -567,8 +590,8 @@ button {
   position: absolute;
   left: 0;
   right: 0;
-  top: var(--pg, 18%);
-  bottom: var(--pg, 18%);
+  top: var(--pg, 21.8%);
+  bottom: var(--pg, 21.8%);
   pointer-events: none;
   background: #fffaf0;
   opacity: calc(var(--shade, 0) * var(--lit, 1) * var(--lit, 1) * 0.2);
@@ -926,7 +949,7 @@ button {
   width: min(1080px, 86vw);
   margin: clamp(30px, 6vh, 64px) auto;
   height: clamp(26px, 4vw, 46px);
-  background: url("/sketchbook/divider.svg") center / 100% auto no-repeat;
+  background: url("/landing-pages/meng-to-sketchbook/divider.png") center / 100% auto no-repeat;
   opacity: 0.5;
 }
 
@@ -1065,4 +1088,106 @@ button {
   color: var(--ink-faint);
   text-align: center;
   padding-bottom: 44px;
+}
+
+.log {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 5vw, 48px);
+}
+
+.log-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.log-list li {
+  display: grid;
+  grid-template-columns: 1.15em minmax(0, 1fr);
+  gap: 10px;
+  align-items: baseline;
+  margin: 0 0 14px;
+  font-size: clamp(16px, 1.55vw, 18px);
+  line-height: 1.55;
+  font-weight: 300;
+}
+
+.log-list .arrow {
+  color: var(--earth);
+}
+
+.resume {
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 clamp(20px, 5vw, 48px);
+}
+
+.entry {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 12px 24px;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--hairline);
+}
+
+.entry .org {
+  font-family: var(--display);
+  font-size: clamp(18px, 2vw, 24px);
+}
+
+.entry .role {
+  margin: 4px 0 0;
+  color: var(--ink-soft);
+  font-size: 14px;
+}
+
+.entry .dates {
+  font-size: 12px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  align-self: center;
+}
+
+.project-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  border-top: 1px solid var(--hairline);
+}
+
+.project {
+  display: block;
+  padding: 18px 4px;
+  border-bottom: 1px solid var(--hairline);
+  transition: background-color 0.22s ease, padding-left 0.22s ease;
+}
+
+.project:hover {
+  background: rgba(255, 252, 244, 0.5);
+  padding-left: 12px;
+}
+
+.project .name {
+  font-family: var(--display);
+  font-size: clamp(20px, 2.2vw, 28px);
+}
+
+.project .tags {
+  display: flex;
+  gap: 10px;
+  margin: 8px 0 6px;
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--earth);
+}
+
+.project .blurb {
+  margin: 0;
+  color: var(--ink-soft);
+  font-size: 15px;
+  font-weight: 300;
+  max-width: 62ch;
 }
