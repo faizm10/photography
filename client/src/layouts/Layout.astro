@@ -1,5 +1,5 @@
 ---
-import "../styles/sketchbook.css";
+import "../styles/landing-page-frame.css";
 
 interface Props {
   title?: string;
@@ -7,8 +7,8 @@ interface Props {
 }
 
 const {
-  title = "Faiz Mustansar",
-  description = "Photographer and software developer. A Toronto sketchbook of still frames.",
+  title = "Meng To",
+  description = "designer, creator, AI educator — Singapore",
 } = Astro.props;
 ---
 
@@ -22,17 +22,8 @@ const {
     <meta name="generator" content={Astro.generator} />
     <title>{title}</title>
     <meta name="description" content={description} />
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Newsreader:opsz,wght@6..72,200..600&display=swap"
-      rel="stylesheet"
-    />
   </head>
   <body>
-    <div class="wash" aria-hidden="true"></div>
-    <main class="page home">
-      <slot />
-    </main>
+    <slot />
   </body>
 </html>
