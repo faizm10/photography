@@ -1,14 +1,28 @@
 ---
-import { site } from "../data/plates";
+import {
+  current,
+  education,
+  navLinks,
+  previously,
+  projects,
+  site,
+  upTo,
+} from "../data/site";
+import { assetDir } from "../data/plates";
 ---
 
 <header class="top">
   <a class="name" href="#sketchbook">{site.name}</a>
   <nav>
-    <a href="#plates">Journal</a>
-    <a href="#about">About</a>
-    <a href="#contact">Contact</a>
+    {navLinks.map((link) => (
+      <a href={link.href}>{link.label}</a>
+    ))}
     <div class="top-socials">
+      <a href={site.github} class="icon-btn" aria-label="GitHub">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.52 2.87 8.35 6.84 9.71.5.1.68-.22.68-.49 0-.24-.01-.87-.01-1.71-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.9 1.57 2.36 1.12 2.94.85.09-.67.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.27 2.75 1.05A9.3 9.3 0 0 1 12 6.84c.85 0 1.71.12 2.51.35 1.9-1.32 2.74-1.05 2.74-1.05.56 1.41.21 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.8-4.58 5.06.36.32.68.94.68 1.9 0 1.38-.01 2.49-.01 2.83 0 .27.18.6.69.49A10.04 10.04 0 0 0 22 12.26C22 6.58 17.52 2 12 2Z"></path>
+        </svg>
+      </a>
       <a href={site.instagram.url} class="icon-btn" aria-label="Instagram">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
           <rect x="2.6" y="2.6" width="18.8" height="18.8" rx="5.4"></rect>
@@ -27,8 +41,8 @@ import { site } from "../data/plates";
 </header>
 
 <section id="sketchbook" class="hero">
-  <img class="botany l" src="/sketchbook/botany-left.svg" alt="" aria-hidden="true" />
-  <img class="botany r" src="/sketchbook/botany-right.svg" alt="" aria-hidden="true" />
+  <img class="botany l" src={`${assetDir}botany-left.png`} alt="" aria-hidden="true" />
+  <img class="botany r" src={`${assetDir}botany-right.png`} alt="" aria-hidden="true" />
 
   <p class="hero-kicker">{site.kicker}</p>
 
@@ -101,30 +115,118 @@ import { site } from "../data/plates";
 
 <section id="about" class="about">
   <div>
-    <p class="section-label">About</p>
+    <p class="section-label">What I'm up to</p>
     <p class="bio">
-      {site.name} is a photographer and software developer based in {site.location}. This sketchbook is
-      the slower half of that work: cities, streets, and landscapes looked at in still frames. Drop your
-      own files in <code>public/photos</code> when you are ready; the plates below are standing in until then.
+      {site.name} — cs at guelph, previously swe intern, vp of tech, and someone who still carries a camera.
+      This sketchbook is the slower half of that: photos, travel, and the work in between.
     </p>
   </div>
-  <img class="bloom" src="/sketchbook/bloom.svg" alt="" aria-hidden="true" />
+  <img class="bloom" src={`${assetDir}bloom.png`} alt="" aria-hidden="true" />
+</section>
+
+<div class="rule short" aria-hidden="true"></div>
+
+<section class="log" aria-label="recent work">
+  <ul class="log-list">
+    {
+      upTo.map((item) => (
+        <li>
+          <span class="arrow" aria-hidden="true">→</span>
+          <span>
+            {item.text}
+            {item.links.map((link) =>
+              link.href ? (
+                <a class="bio-link" href={link.href}>
+                  {link.label}
+                </a>
+              ) : (
+                link.label
+              ),
+            )}
+          </span>
+        </li>
+      ))
+    }
+  </ul>
 </section>
 
 <div class="rule short" aria-hidden="true"></div>
 
 <section id="plates" class="plates">
-  <p class="section-label">Plates</p>
+  <p class="section-label">Photos</p>
   <ol class="plate-list" id="plateList"></ol>
 </section>
 
 <div class="rule short" aria-hidden="true"></div>
+
+<section id="work" class="resume">
+  <p class="section-label">Current</p>
+  {
+    current.map((item) => (
+      <div class="entry">
+        <div>
+          <div class="org">{item.org}</div>
+          <p class="role">{item.role}</p>
+        </div>
+        <div class="dates">{item.dates}</div>
+      </div>
+    ))
+  }
+
+  <p class="section-label" style="margin-top:36px">Education</p>
+  {
+    education.map((item) => (
+      <div class="entry">
+        <div>
+          <div class="org">{item.org}</div>
+          <p class="role">{item.role}</p>
+        </div>
+        <div class="dates">{item.dates}</div>
+      </div>
+    ))
+  }
+
+  <p class="section-label" style="margin-top:36px">Previously</p>
+  {
+    previously.map((item) => (
+      <div class="entry">
+        <div>
+          <div class="org">{item.org}</div>
+          <p class="role">{item.role}</p>
+        </div>
+        <div class="dates">{item.dates}</div>
+      </div>
+    ))
+  }
+
+  <p class="section-label" style="margin-top:36px">Projects</p>
+  <ul class="project-list">
+    {
+      projects.map((project) => (
+        <li>
+          <a class="project" href={project.href}>
+            <div class="name">{project.name}</div>
+            <div class="tags">
+              {project.tags.map((tag) => (
+                <span>{tag}</span>
+              ))}
+            </div>
+            <p class="blurb">{project.blurb}</p>
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</section>
+
+<div class="rule short" aria-hidden="true"></div>
 <p class="foot" id="contact">
-  {site.location} · Sketchbook · <a href={`mailto:${site.email}`} class="bio-link">{site.email}</a>
+  {site.location} · <a href={site.siteUrl} class="bio-link">faizm.ca</a> ·
+  <a href={`mailto:${site.email}`} class="bio-link">{site.email}</a>
 </p>
 
 <script>
-  import { plates, landingIndex } from "../data/plates";
+  import { plates, landingIndex, assetDir } from "../data/plates";
   import { initSketchbook } from "../scripts/sketchbook";
-  initSketchbook({ plates, landingIndex });
+  initSketchbook({ plates, landingIndex, assetDir });
 </script>
