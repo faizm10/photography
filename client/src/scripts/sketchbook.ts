@@ -22,8 +22,7 @@ export function initSketchbook({ plates, landingIndex, assetDir }: Init) {
   const book = document.getElementById("sbBook");
   const capBox = document.getElementById("sbCaptions");
   const hint = document.getElementById("sbHint");
-  const plateList = document.getElementById("plateList");
-  if (!wrap || !stage || !sb3d || !book || !capBox || !hint || !plateList) return;
+  if (!wrap || !stage || !sb3d || !book || !capBox || !hint) return;
 
   const REDUCED = matchMedia("(prefers-reduced-motion: reduce)").matches;
   const N = 18;
@@ -136,7 +135,6 @@ export function initSketchbook({ plates, landingIndex, assetDir }: Init) {
     book.appendChild(b);
     layout();
     caption();
-    marks();
     syncZoomLayer();
     placeLoupe();
   }
@@ -304,7 +302,7 @@ export function initSketchbook({ plates, landingIndex, assetDir }: Init) {
     return book.getBoundingClientRect();
   }
   function hideHint() {
-    hint.classList.add("gone");
+    hint?.classList.add("gone");
   }
 
   stage.addEventListener("pointerdown", (e) => {
@@ -410,23 +408,6 @@ export function initSketchbook({ plates, landingIndex, assetDir }: Init) {
     }
     startTurn(dir, 0);
     commit();
-  }
-
-  function goTo(i: number) {
-    if (introOn) endIntro();
-    if (i === idx) return;
-    if (turn) {
-      idx = turn.to;
-      turn = null;
-    }
-    const fwd = (i - idx + M) % M;
-    const back = (idx - i + M) % M;
-    if (Math.min(fwd, back) === 1) {
-      step(fwd === 1 ? "next" : "prev");
-      return;
-    }
-    idx = i;
-    paint();
   }
 
   document.getElementById("sbLeft")?.addEventListener("click", () => step("prev"));
@@ -606,30 +587,6 @@ export function initSketchbook({ plates, landingIndex, assetDir }: Init) {
     setView(view.trx, view.try_, view.tz / 1.16);
     hideHint();
   });
-
-  PAGES.forEach((p, i) => {
-    const li = el("li");
-    const b = el("button", "plate");
-    b.innerHTML =
-      '<span class="n">' +
-      String(i + 1).padStart(2, "0") +
-      '</span><span class="t"></span><span class="p"></span>';
-    b.querySelector(".t")!.textContent = p.title;
-    b.querySelector(".p")!.textContent = p.place;
-    b.addEventListener("click", () => {
-      goTo(i);
-      document.getElementById("sketchbook")?.scrollIntoView({ behavior: "smooth", block: "center" });
-    });
-    li.appendChild(b);
-    plateList.appendChild(li);
-  });
-
-  function marks() {
-    const cur = turn ? turn.to : idx;
-    plateList.querySelectorAll(".plate").forEach((b, i) =>
-      b.setAttribute("aria-current", i === cur ? "true" : "false"),
-    );
-  }
 
   let riffle: { bell: number; dur: number }[] | null = null;
   let riffleAt = 0;
