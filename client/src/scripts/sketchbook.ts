@@ -7,11 +7,12 @@ type Turn = { dir: "next" | "prev"; from: number; to: number; t: number };
 type Init = {
   plates: Plate[];
   landingIndex: number;
+  assetDir: string;
 };
 
-export function initSketchbook({ plates, landingIndex }: Init) {
+export function initSketchbook({ plates, landingIndex, assetDir }: Init) {
   const Q = new URLSearchParams(location.search);
-  const PAGES: Page[] = plates.map((p) => ({ ...p, url: "" }));
+  const PAGES: Page[] = plates.map((p) => ({ ...p, url: assetDir + p.file }));
   const M = PAGES.length;
   const LAND = Math.max(0, Math.min(M - 1, landingIndex));
 
@@ -496,8 +497,8 @@ export function initSketchbook({ plates, landingIndex }: Init) {
     const cy = bh / 2;
     const x0 = cx + (bw * 0.051 - cx) * z;
     const x1 = cx + (bw * 0.949 - cx) * z;
-    const y0 = cy + (bh * 0.18 - cy) * z;
-    const y1 = cy + (bh * 0.82 - cy) * z;
+    const y0 = cy + (bh * 0.218 - cy) * z;
+    const y1 = cy + (bh * 0.782 - cy) * z;
     const nx = Math.max(x0, Math.min(lx, x1));
     const ny = Math.max(y0, Math.min(ly, y1));
     const inside =
@@ -676,10 +677,20 @@ export function initSketchbook({ plates, landingIndex }: Init) {
   }
 
   async function boot() {
-    await Promise.all(PAGES.map((p) => composeSpread(p).then((url) => (p.url = url))));
     idx = Q.has("shot") ? (parseInt(Q.get("shot") || "0", 10) || 0) % M : 0;
     paint();
     applyView();
+    await Promise.all(
+      PAGES.map((p) => {
+        const im = new Image();
+        im.src = p.url;
+        return im.decode
+          ? im.decode().catch(() => {})
+          : new Promise((r) => {
+              im.onload = im.onerror = () => r(undefined);
+            });
+      }),
+    );
     if (document.fonts?.ready) await document.fonts.ready.catch(() => {});
     syncZoom();
     restLoupe();
@@ -694,159 +705,3 @@ export function initSketchbook({ plates, landingIndex }: Init) {
   boot();
 }
 
-function loadPhoto(seed: string, w: number, h: number): Promise<HTMLImageElement | null> {
-  return new Promise((resolve) => {
-    const im = new Image();
-    im.crossOrigin = "anonymous";
-    im.onload = () => resolve(im);
-    im.onerror = () => resolve(null);
-    im.src = `https://picsum.photos/seed/${encodeURIComponent(seed)}/${w}/${h}`;
-  });
-}
-
-async function composeSpread(page: Plate): Promise<string> {
-  const W = 1760;
-  const H = 1240;
-  const canvas = document.createElement("canvas");
-  canvas.width = W;
-  canvas.height = H;
-  const ctx = canvas.getContext("2d");
-  if (!ctx) return "";
-
-  ctx.clearRect(0, 0, W, H);
-
-  const x0 = W * 0.045;
-  const y0 = H * 0.175;
-  const x1 = W * 0.955;
-  const y1 = H * 0.825;
-  const r = 22;
-
-  roundRect(ctx, x0 - 10, y0 - 8, x1 - x0 + 20, y1 - y0 + 22, r + 4);
-  ctx.fillStyle = "#5a4330";
-  ctx.fill();
-
-  roundRect(ctx, x0, y0, x1 - x0, y1 - y0, r);
-  ctx.fillStyle = "#f1e8d6";
-  ctx.fill();
-
-  const mid = (x0 + x1) / 2;
-  const g = ctx.createLinearGradient(mid - 28, 0, mid + 28, 0);
-  g.addColorStop(0, "rgba(70,50,28,0)");
-  g.addColorStop(0.46, "rgba(70,50,28,.18)");
-  g.addColorStop(0.5, "rgba(70,50,28,.32)");
-  g.addColorStop(0.54, "rgba(70,50,28,.16)");
-  g.addColorStop(1, "rgba(70,50,28,0)");
-  ctx.fillStyle = g;
-  ctx.fillRect(mid - 36, y0, 72, y1 - y0);
-
-  ctx.strokeStyle = "rgba(43,39,33,.12)";
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(mid, y0 + 10);
-  ctx.lineTo(mid, y1 - 10);
-  ctx.stroke();
-
-  const pad = 54;
-  const leftX = x0 + pad;
-  const leftW = mid - x0 - pad * 1.4;
-  ctx.fillStyle = "rgba(43,39,33,.38)";
-  ctx.font = "400 22px Newsreader, Georgia, serif";
-  ctx.fillText(page.year, leftX, y0 + 78);
-
-  ctx.fillStyle = "#2b2721";
-  ctx.font = "italic 64px Instrument Serif, Georgia, serif";
-  wrapText(ctx, page.title, leftX, y0 + 160, leftW, 70);
-
-  ctx.fillStyle = "rgba(43,39,33,.5)";
-  ctx.font = "400 24px Newsreader, Georgia, serif";
-  ctx.fillText(page.place.toUpperCase(), leftX, y0 + 268);
-
-  ctx.strokeStyle = "rgba(43,39,33,.22)";
-  ctx.beginPath();
-  ctx.moveTo(leftX, y0 + 292);
-  ctx.lineTo(leftX + 88, y0 + 292);
-  ctx.stroke();
-
-  ctx.fillStyle = "rgba(43,39,33,.62)";
-  ctx.font = "300 26px Newsreader, Georgia, serif";
-  wrapText(ctx, page.note, leftX, y0 + 340, leftW, 36);
-
-  if (page.camera) {
-    ctx.fillStyle = "rgba(43,39,33,.4)";
-    ctx.font = "400 18px Newsreader, Georgia, serif";
-    ctx.fillText(page.camera, leftX, y1 - 48);
-  }
-
-  const photo = await loadPhoto(
-    page.seed,
-    page.orientation === "portrait" ? 720 : 980,
-    page.orientation === "portrait" ? 980 : 680,
-  );
-  const rx = mid + 36;
-  const ry = y0 + 36;
-  const rw = x1 - mid - 72;
-  const rh = y1 - y0 - 72;
-  ctx.fillStyle = "#e4d8c2";
-  ctx.fillRect(rx, ry, rw, rh);
-
-  if (photo) {
-    const fitted = fitContain(photo.width, photo.height, rw - 28, rh - 28);
-    const dx = rx + (rw - fitted.w) / 2;
-    const dy = ry + (rh - fitted.h) / 2;
-    ctx.drawImage(photo, dx, dy, fitted.w, fitted.h);
-  } else {
-    ctx.fillStyle = "rgba(43,39,33,.25)";
-    ctx.font = "italic 28px Instrument Serif, Georgia, serif";
-    ctx.fillText("Plate", rx + 24, ry + rh / 2);
-  }
-
-  ctx.strokeStyle = "rgba(43,39,33,.16)";
-  ctx.strokeRect(rx + 8, ry + 8, rw - 16, rh - 16);
-
-  return canvas.toDataURL("image/jpeg", 0.92);
-}
-
-function fitContain(sw: number, sh: number, mw: number, mh: number) {
-  const s = Math.min(mw / sw, mh / sh);
-  return { w: sw * s, h: sh * s };
-}
-
-function wrapText(
-  ctx: CanvasRenderingContext2D,
-  text: string,
-  x: number,
-  y: number,
-  maxW: number,
-  lineH: number,
-) {
-  const words = text.split(" ");
-  let line = "";
-  let yy = y;
-  for (const w of words) {
-    const test = line ? line + " " + w : w;
-    if (ctx.measureText(test).width > maxW && line) {
-      ctx.fillText(line, x, yy);
-      line = w;
-      yy += lineH;
-    } else line = test;
-  }
-  if (line) ctx.fillText(line, x, yy);
-}
-
-function roundRect(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-  r: number,
-) {
-  const rr = Math.min(r, w / 2, h / 2);
-  ctx.beginPath();
-  ctx.moveTo(x + rr, y);
-  ctx.arcTo(x + w, y, x + w, y + h, rr);
-  ctx.arcTo(x + w, y + h, x, y + h, rr);
-  ctx.arcTo(x, y + h, x, y, rr);
-  ctx.arcTo(x, y, x + w, y, rr);
-  ctx.closePath();
-}
