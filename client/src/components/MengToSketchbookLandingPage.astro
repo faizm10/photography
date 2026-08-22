@@ -1,0 +1,21 @@
+---
+interface Props {
+  className?: string;
+  title?: string;
+}
+
+const {
+  className = "",
+  title = "Meng To — Singapore Sketchbook",
+} = Astro.props;
+---
+
+<div class:list={["landing-page-frame", className]}>
+  <iframe
+    title={title}
+    src="/landing-pages/meng-to-sketchbook.html"
+    sandbox="allow-downloads allow-forms allow-modals allow-popups allow-same-origin allow-scripts"
+    loading="eager"
+  >
+  </iframe>
+</div>
