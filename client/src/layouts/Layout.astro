@@ -1,5 +1,5 @@
 ---
-import "../styles/landing-page-frame.css";
+import "../styles/sketchbook.css";
 
 interface Props {
   title?: string;
@@ -7,8 +7,8 @@ interface Props {
 }
 
 const {
-  title = "Meng To",
-  description = "designer, creator, AI educator — Singapore",
+  title = "Faiz Mustansar",
+  description = "cs @ guelph · building. Photography, travel, and software.",
 } = Astro.props;
 ---
 
@@ -24,6 +24,9 @@ const {
     <meta name="description" content={description} />
   </head>
   <body>
-    <slot />
+    <div class="wash" aria-hidden="true"></div>
+    <main class="page home">
+      <slot />
+    </main>
   </body>
 </html>
