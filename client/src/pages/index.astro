@@ -1,8 +1,86 @@
 ---
-import Sketchbook from "../components/Sketchbook.astro";
+import { Image } from "astro:assets";
 import Layout from "../layouts/Layout.astro";
+import { photos } from "../data/photos";
+import { site } from "../data/site";
 ---
 
 <Layout>
-  <Sketchbook />
+  <header class="top">
+    <a class="name" href="/">{site.name}</a>
+    <span class="count">{String(photos.length).padStart(2, "0")} photographs</span>
+  </header>
+
+  <main>
+    {photos.length === 0 ? (
+      <p class="empty">Drop images into <code>client/src/photos/</code> to fill the grid.</p>
+    ) : (
+      <ul class="grid">
+        {photos.map((photo, i) => (
+          <li class="tile" style={`--i:${i % 2}`}>
+            <button class="frame" data-index={i} aria-label={`Open ${photo.caption || `photo ${i + 1}`}`}>
+              <Image
+                src={photo.src}
+                alt={photo.caption}
+                widths={[640, 1080, 1600, 2200]}
+                sizes="(max-width: 760px) 100vw, 50vw"
+                loading={i < 2 ? "eager" : "lazy"}
+                fetchpriority={i < 2 ? "high" : "auto"}
+                decoding="async"
+              />
+            </button>
+            {photo.caption && <p class="caption"><span>{String(i + 1).padStart(2, "0")}</span>{photo.caption}</p>}
+          </li>
+        ))}
+      </ul>
+    )}
+  </main>
+
+  <dialog class="lightbox" id="lightbox" aria-label="Photo viewer">
+    <img id="lbImg" alt="" />
+    <p class="lb-caption" id="lbCaption"></p>
+    <button class="lb-btn lb-close" id="lbClose" aria-label="Close">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"><path d="M5 5l14 14M19 5L5 19"></path></svg>
+    </button>
+    <button class="lb-btn lb-prev" id="lbPrev" aria-label="Previous">
+      <svg viewBox="0 0 14 44" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><polyline points="11,3 3,22 11,41"></polyline></svg>
+    </button>
+    <button class="lb-btn lb-next" id="lbNext" aria-label="Next">
+      <svg viewBox="0 0 14 44" fill="none" stroke="currentColor" stroke-width="1.1" stroke-linecap="round" stroke-linejoin="round"><polyline points="3,3 11,22 3,41"></polyline></svg>
+    </button>
+  </dialog>
+
+  <footer class="foot">
+    <p class="foot-name">{site.name}</p>
+    <div class="foot-socials">
+      <a href={site.instagram} class="icon-btn" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+          <rect x="2.6" y="2.6" width="18.8" height="18.8" rx="5.4"></rect>
+          <circle cx="12" cy="12" r="4.4"></circle>
+          <circle cx="17.6" cy="6.4" r="1.15" fill="currentColor" stroke="none"></circle>
+        </svg>
+      </a>
+      <a href={site.x} class="icon-btn" aria-label="X">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M17.7 2.6h3.3l-7.2 8.2 8.5 11.2h-6.7l-5.2-6.9-6 6.9H1.1l7.7-8.8L.7 2.6h6.9l4.7 6.3 5.4-6.3Zm-1.2 17.5h1.8L7.6 4.4H5.7l10.8 15.7Z"></path>
+        </svg>
+      </a>
+      <a href={site.github} class="icon-btn" aria-label="GitHub">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M12 2C6.48 2 2 6.58 2 12.26c0 4.52 2.87 8.35 6.84 9.71.5.1.68-.22.68-.49 0-.24-.01-.87-.01-1.71-2.78.62-3.37-1.37-3.37-1.37-.45-1.18-1.11-1.5-1.11-1.5-.91-.64.07-.63.07-.63 1 .07 1.53 1.06 1.53 1.06.9 1.57 2.36 1.12 2.94.85.09-.67.35-1.12.63-1.38-2.22-.26-4.56-1.14-4.56-5.07 0-1.12.39-2.03 1.03-2.75-.1-.26-.45-1.3.1-2.71 0 0 .84-.27 2.75 1.05A9.3 9.3 0 0 1 12 6.84c.85 0 1.71.12 2.51.35 1.9-1.32 2.74-1.05 2.74-1.05.56 1.41.21 2.45.1 2.71.64.72 1.03 1.63 1.03 2.75 0 3.94-2.34 4.8-4.58 5.06.36.32.68.94.68 1.9 0 1.38-.01 2.49-.01 2.83 0 .27.18.6.69.49A10.04 10.04 0 0 0 22 12.26C22 6.58 17.52 2 12 2Z"></path>
+        </svg>
+      </a>
+      <a href={`mailto:${site.email}`} class="icon-btn" aria-label="Email">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+          <rect x="2.4" y="4.6" width="19.2" height="14.8" rx="2.4"></rect>
+          <path d="m3.2 6.4 8.8 6.6 8.8-6.6"></path>
+        </svg>
+      </a>
+    </div>
+  </footer>
 </Layout>
+
+<script>
+  import { initGallery } from "../scripts/gallery";
+  initGallery();
+</script>
