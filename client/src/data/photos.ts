@@ -12,15 +12,17 @@ export type Photo = {
   caption: string;
 };
 
-// "03-toronto-harbour.jpg" -> "toronto harbour"
-const toCaption = (path: string) =>
-  path
+// "03-toronto-harbour.jpg" -> "toronto harbour"; camera names like IMG_9551 get no caption.
+const toCaption = (path: string) => {
+  const name = path
     .split("/")
     .pop()!
     .replace(/\.[^.]+$/, "")
     .replace(/^\d+[-_ ]*/, "")
     .replace(/[-_]+/g, " ")
     .trim();
+  return /^(img|dsc|dscf|dscn|pxl|gopr|p)\s?\d+$/i.test(name) ? "" : name;
+};
 
 export const photos: Photo[] = Object.keys(files)
   .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
