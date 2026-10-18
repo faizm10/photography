@@ -12,12 +12,12 @@ export type Photo = {
   caption: string;
 };
 
-// "03-toronto-harbour.jpg" -> "toronto harbour"; camera names like IMG_9551 get no caption.
+// "03-toronto-harbour.jpg" -> "toronto harbour"; camera names like IMG_9551
+// and phone export IDs like 54B9DCF7-B324-… get no caption.
 const toCaption = (path: string) => {
-  const name = path
-    .split("/")
-    .pop()!
-    .replace(/\.[^.]+$/, "")
+  const base = path.split("/").pop()!.replace(/\.[^.]+$/, "");
+  if (/^[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(base)) return "";
+  const name = base
     .replace(/^\d+[-_ ]*/, "")
     .replace(/[-_]+/g, " ")
     .trim();
